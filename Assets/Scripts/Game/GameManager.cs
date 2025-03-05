@@ -31,8 +31,10 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        // 로그인
-        OpenSigninPanel();
+        NetworkManager.Instance.GetScore((userInfo) =>
+        {
+            Debug.Log("Already has Session ID : " + userInfo.username);
+        }, OpenSigninPanel);
     }
 
     public void ChangeToGameScene(GameType gameType)

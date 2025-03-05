@@ -12,7 +12,7 @@ public struct SigninResult
     public int result;
 }
 
-public struct ScoreResult
+public struct UserInfo
 {
     public string id;
     public string username;
@@ -48,10 +48,10 @@ public class SigninPanelController : MonoBehaviour
             },
             (result) =>
             {
-                if (result == (int)Constants.NetworkResultType.UserNameFail)
+                if (result == (int)Constants.SigninResultType.UserNameNotFound)
                 {
                     _usernamedInputField.text = "";
-                } else if (result == (int)Constants.NetworkResultType.PasswordFail)
+                } else if (result == (int)Constants.SigninResultType.IncorrectPassword)
                 {
                     _passwordInputField.text = "";
                 }

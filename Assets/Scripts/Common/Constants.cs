@@ -2,10 +2,10 @@
 {
     public const string ServerURL = "http://localhost:3000";
 
-    public enum NetworkResultType
+    public enum SigninResultType
     {
-        UserNameFail,
-        PasswordFail,
+        UserNameNotFound,
+        IncorrectPassword,
         Success,
     }
 }
