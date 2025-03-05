@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
-
 
 public struct SignupData
 {
@@ -17,8 +13,6 @@ public class SignupPanelController : MonoBehaviour
     [SerializeField] private TMP_InputField _nicknameInputField;
     [SerializeField] private TMP_InputField _passwordInputField;
     [SerializeField] private TMP_InputField _confirmPasswordInputField;
-
-    private const string ServerURL = "http://localhost:3000";
 
     public void OnClickConfirmButton()
     {
@@ -47,52 +41,15 @@ public class SignupPanelController : MonoBehaviour
             };
 
             // 서버로 SignupData 전달하면서 회원가입 진행
-            StartCoroutine(Signup(signupData));
-        }
-
-    }
-
-    IEnumerator Signup(SignupData signupData)
-    {
-        string jsonString = JsonUtility.ToJson(signupData);
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonString);
-
-        using (UnityWebRequest www = new UnityWebRequest(ServerURL + "/users/signup", UnityWebRequest.kHttpVerbPOST))
-        {
-            www.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
-            www.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-            www.SetRequestHeader("Content-Type", "application/json");
-
-            yield return www.SendWebRequest();
-            if (www.result == UnityWebRequest.Result.ConnectionError ||
-                www.result == UnityWebRequest.Result.ProtocolError)
+            StartCoroutine(NetworkManager.Instance.Signup(signupData, () => {
+                Destroy(gameObject);
+            }, () =>
             {
-                Debug.Log("Error : " + www.error);
-
-                if (www.responseCode == 409)
-                {
-                    // TODO: 중복 사용자 생성 표시 팝업
-                    Debug.Log("중복 사용자");
-                    GameManager.Instance.OpenConfirmPanel("이미 존재하는 사용자입니다.", () =>
-                    {
-                        _usernameInputField.text = "";
-                        _nicknameInputField.text = "";
-                        _passwordInputField.text = "";
-                        _confirmPasswordInputField.text = "";
-                    });
-                }
-            }
-            else
-            {
-                var result = www.downloadHandler.text;
-                Debug.Log("Result :" + result);
-
-                //회원가입 성공 팝업 표시
-                GameManager.Instance.OpenConfirmPanel("회원가입이 완료되었습니다.", () =>
-                {
-                    Destroy(gameObject);
-                });
-            }
+                _usernameInputField.text = "";
+                _nicknameInputField.text = "";
+                _passwordInputField.text = "";
+                _confirmPasswordInputField.text = "";
+            }));
         }
     }
 

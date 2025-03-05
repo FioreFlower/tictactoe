@@ -5,6 +5,8 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject confirmPanel;
+    [SerializeField] private GameObject signinPanel;
+    [SerializeField] private GameObject signupPanel;
     
     private BlockController _blockController;
     private GameUIController _gameUIController;
@@ -26,6 +28,12 @@ public class GameManager : Singleton<GameManager>
     }
     
     public enum GameType { SinglePlayer, CoOpPlayer }
+
+    private void Start()
+    {
+        // 로그인
+        OpenSigninPanel();
+    }
 
     public void ChangeToGameScene(GameType gameType)
     {
@@ -53,6 +61,22 @@ public class GameManager : Singleton<GameManager>
         {
             var confirmPanelObject = Instantiate(confirmPanel, _canvas.transform);
             confirmPanelObject.GetComponent<ConfirmPanelController>().Show(message, onConfirmButtonClick);
+        }
+    }
+
+    public void OpenSigninPanel()
+    {
+        if (_canvas != null)
+        {
+            var signinPanelObject = Instantiate(signinPanel, _canvas.transform);
+        }
+    }
+
+    public void OpenSignupPanel()
+    {
+        if (_canvas != null)
+        {
+            var signupPanelObject = Instantiate(signupPanel, _canvas.transform);
         }
     }
 
