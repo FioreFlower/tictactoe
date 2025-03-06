@@ -93,7 +93,15 @@ public class GameManager : Singleton<GameManager>
     {
         if (_canvas != null)
         {
-            var leaderboardPanelObject = Instantiate(leaderboardPanel, _canvas.transform);
+            NetworkManager.Instance.GetScore((userInfo) =>
+            {
+                Debug.Log("Already has Session ID : " + userInfo.username);
+                PlayerScore = userInfo.score; // 서버 점수 불러와 캐싱
+                UserNickName = userInfo.nickname; // 로그인한 유저 닉네임 캐싱
+                
+                var leaderboardPanelObject = Instantiate(leaderboardPanel, _canvas.transform);
+            }, OpenSigninPanel);
+
         }
     }
 
