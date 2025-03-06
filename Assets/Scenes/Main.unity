@@ -155,6 +155,7 @@ MonoBehaviour:
   confirmPanel: {fileID: 3322007610722072902, guid: fec6a239fd2033647b497ac588c545f1, type: 3}
   signinPanel: {fileID: 5434953094796285686, guid: 6470cd4698611cb4599a6d1b0f517b64, type: 3}
   signupPanel: {fileID: 8518634952601447722, guid: 301099cc81c84c24dab422c5a2f1b5a2, type: 3}
+  leaderboardPanel: {fileID: 905171676720951850, guid: 28abf8242b5d6634db3114aecb277d89, type: 3}
 --- !u!4 &234581368
 Transform:
   m_ObjectHideFlags: 0

@@ -7,7 +7,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject confirmPanel;
     [SerializeField] private GameObject signinPanel;
     [SerializeField] private GameObject signupPanel;
-    
+    [SerializeField] private GameObject leaderboardPanel;
+
     private BlockController _blockController;
     private GameUIController _gameUIController;
     private Canvas _canvas;
@@ -26,6 +27,10 @@ public class GameManager : Singleton<GameManager>
         Lose,   // 플레이어 패
         Draw    // 비김
     }
+
+    // 서버에서 받은 데이터 캐싱
+    public int PlayerScore { get; private set; }
+    public string UserNickName{ get; private set;}
     
     public enum GameType { SinglePlayer, CoOpPlayer }
 
@@ -34,6 +39,8 @@ public class GameManager : Singleton<GameManager>
         NetworkManager.Instance.GetScore((userInfo) =>
         {
             Debug.Log("Already has Session ID : " + userInfo.username);
+            PlayerScore = userInfo.score; // 서버 점수 불러와 캐싱
+            UserNickName = userInfo.nickname; // 로그인한 유저 닉네임 캐싱
         }, OpenSigninPanel);
     }
 
@@ -82,6 +89,14 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public void OpenLeaderboardPanel()
+    {
+        if (_canvas != null)
+        {
+            var leaderboardPanelObject = Instantiate(leaderboardPanel, _canvas.transform);
+        }
+    }
+
     /// <summary>
     /// 게임 시작
     /// </summary>
@@ -121,6 +136,16 @@ public class GameManager : Singleton<GameManager>
         {
             case GameResult.Win:
                 Debug.Log("Player A win");
+                PlayerScore += 10;
+                //  여기서 게임 스코어 업데이트?
+                UpdateScoreRequest updateScore = new()
+                {
+                    score = PlayerScore
+                };
+
+                // 업데이트 요청
+                NetworkManager.Instance.UpdateScore(updateScore, () => { }, () => { });
+
                 break;
             case GameResult.Lose:
                 Debug.Log("Player B win");

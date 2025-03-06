@@ -22,11 +22,11 @@ public class MainPanelController : MonoBehaviour
         NetworkManager.Instance.GetScore((userInfo) =>
         {
             Debug.Log(userInfo);
+            GameManager.Instance.OpenLeaderboardPanel();
         }, () =>
         {
             // 로그인 화면 띄우기
             GameManager.Instance.OpenSigninPanel();
         });
-
     }
 }

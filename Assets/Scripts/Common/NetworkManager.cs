@@ -3,12 +3,13 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
 public class NetworkManager : Singleton<NetworkManager>
 {
-    public IEnumerator Signin(SigninData signinData, Action successAction, Action<int> failAction)
+    public IEnumerator Signin(SigninRequest signinRequest, Action successAction, Action<int> failAction)
     {
-        string jsonString = JsonUtility.ToJson(signinData);
+        string jsonString = JsonUtility.ToJson(signinRequest);
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonString);
 
         using ( UnityWebRequest www =
@@ -56,7 +57,7 @@ public class NetworkManager : Singleton<NetworkManager>
                 }
 
                 var resultString = www.downloadHandler.text;
-                var result = JsonUtility.FromJson<SigninResult>(resultString);
+                var result = JsonUtility.FromJson<SigninResponse>(resultString);
 
                 if (result.result == (int)Constants.SigninResultType.UserNameNotFound)
                 {
@@ -87,9 +88,9 @@ public class NetworkManager : Singleton<NetworkManager>
         }
     }
 
-    public IEnumerator Signup(SignupData signupData , Action successAction, Action failAction)
+    public IEnumerator Signup(SignupRequest signupRequest , Action successAction, Action failAction)
     {
-        string jsonString = JsonUtility.ToJson(signupData);
+        string jsonString = JsonUtility.ToJson(signupRequest);
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonString);
 
         using ( UnityWebRequest www =
@@ -138,7 +139,7 @@ public class NetworkManager : Singleton<NetworkManager>
     {
         using (UnityWebRequest www = new UnityWebRequest(Constants.ServerURL + "/users/score", UnityWebRequest.kHttpVerbGET))
         {
-            www.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            www.downloadHandler = new DownloadHandlerBuffer();
 
             string sid = PlayerPrefs.GetString("sid", ";");
             if (!string.IsNullOrEmpty(sid))
@@ -165,6 +166,98 @@ public class NetworkManager : Singleton<NetworkManager>
                 Debug.Log("user Score : " + userScore.score);
 
                 successAction?.Invoke(userScore);
+            }
+        }
+    }
+
+    public void UpdateScore(UpdateScoreRequest score, Action successAction, Action failAction)
+    {
+        StartCoroutine(UpdateScore_C(score, successAction, failAction));
+    }
+
+    private IEnumerator UpdateScore_C(UpdateScoreRequest score, Action successAction, Action failAction)
+    {
+        string jsonString = JsonUtility.ToJson(score);
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonString);
+
+        using ( UnityWebRequest www =
+                new UnityWebRequest(Constants.ServerURL + "/users/addscore", UnityWebRequest.kHttpVerbPOST))
+        {
+            www.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            www.downloadHandler = new DownloadHandlerBuffer();
+            www.SetRequestHeader("Content-Type", "application/json");
+
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.ConnectionError ||
+                www.result == UnityWebRequest.Result.ProtocolError)
+            {
+                // TODO : 연결 오류 프로토콜 오류시 처리
+
+                failAction?.Invoke();
+            }
+            else
+            {
+                string cookie = www.GetResponseHeader("Set-Cookie");
+
+                if (!string.IsNullOrEmpty(cookie))
+                {
+                    int lastIndex = cookie.IndexOf('='); // 첫 번째 '='의 위치 찾기
+                    if (lastIndex != -1 && lastIndex + 1 < cookie.Length) // '='이 존재하고, 뒤에 값이 있을 경우
+                    {
+                        string sid = cookie.Substring(lastIndex + 1).Split(';')[0]; // '=' 다음부터 세미콜론 이전까지 추출
+                        Debug.Log(sid);
+                        PlayerPrefs.SetString("sid", sid);
+                    }
+                    else
+                    {
+                        Debug.Log("올바른 쿠키 형식이 아님");
+                    }
+                }
+                else
+                {
+                    Debug.Log("쿠키가 비어 있음");
+                }
+
+                var result = www.downloadHandler.text;
+                var message = JsonUtility.FromJson<UpdateScoreResult>(result);
+
+                Debug.Log("user Score : " + message.message);
+                successAction?.Invoke();
+            }
+        }
+    }
+
+    public void LoadLeaderboard(Action<LeaderboardData[]> successAction, Action failAction)
+    {
+        StartCoroutine(LoadLeaderboardC(successAction, failAction));
+    }
+
+    private IEnumerator LoadLeaderboardC(Action<LeaderboardData[]> successAction, Action failAction)
+    {
+
+        using (UnityWebRequest www = new UnityWebRequest(Constants.ServerURL + "/users/leaderboard", UnityWebRequest.kHttpVerbGET))
+        {
+            www.downloadHandler = new DownloadHandlerBuffer();
+
+            string sid = PlayerPrefs.GetString("sid", ";");
+            if (!string.IsNullOrEmpty(sid))
+            {
+                www.SetRequestHeader("Cookie", sid);
+            }
+
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                string json = www.downloadHandler.text;
+                var result = JsonUtility.FromJson<LeaderboardDataList>(json);
+                successAction?.Invoke(result.leaderboardDatas);
+            }
+            else
+            {
+                Debug.LogError("데이터 불러오기 실패: " + www.error);
+                failAction?.Invoke();
             }
         }
     }

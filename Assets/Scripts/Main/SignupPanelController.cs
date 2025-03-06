@@ -1,12 +1,6 @@
 using TMPro;
 using UnityEngine;
 
-public struct SignupData
-{
-    public string username;
-    public string nickname;
-    public string password;
-}
 public class SignupPanelController : MonoBehaviour
 {
     [SerializeField] private TMP_InputField _usernameInputField;
@@ -33,7 +27,7 @@ public class SignupPanelController : MonoBehaviour
 
         if (password.Equals(confirmPassword))
         {
-            SignupData signupData = new()
+            SignupRequest signupRequest = new()
             {
                 username = username,
                 nickname = nickname,
@@ -41,7 +35,7 @@ public class SignupPanelController : MonoBehaviour
             };
 
             // 서버로 SignupData 전달하면서 회원가입 진행
-            StartCoroutine(NetworkManager.Instance.Signup(signupData, () => {
+            StartCoroutine(NetworkManager.Instance.Signup(signupRequest, () => {
                 Destroy(gameObject);
             }, () =>
             {

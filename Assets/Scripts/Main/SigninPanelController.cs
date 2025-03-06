@@ -1,25 +1,6 @@
 using TMPro;
 using UnityEngine;
 
-public struct SigninData
-{
-    public string username;
-    public string password;
-}
-
-public struct SigninResult
-{
-    public int result;
-}
-
-public struct UserInfo
-{
-    public string id;
-    public string username;
-    public string nickname;
-    public int score;
-}
-
 public class SigninPanelController : MonoBehaviour
 {
     [SerializeField] private TMP_InputField _usernamedInputField;
@@ -36,13 +17,13 @@ public class SigninPanelController : MonoBehaviour
             return;
         }
 
-        SigninData signinData = new()
+        SigninRequest signinRequest = new()
         {
             username = username,
             password = password
         };
 
-        StartCoroutine(NetworkManager.Instance.Signin(signinData, () =>
+        StartCoroutine(NetworkManager.Instance.Signin(signinRequest, () =>
             {
                 Destroy(gameObject);
             },
