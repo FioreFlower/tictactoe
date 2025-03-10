@@ -23,9 +23,10 @@ public class SigninPanelController : MonoBehaviour
             password = password
         };
 
-        StartCoroutine(NetworkManager.Instance.Signin(signinRequest, () =>
+        NetworkManager.Instance.Signin(signinRequest, () =>
             {
                 Destroy(gameObject);
+                GameManager.Instance.GetScore();
             },
             (result) =>
             {
@@ -36,7 +37,7 @@ public class SigninPanelController : MonoBehaviour
                 {
                     _passwordInputField.text = "";
                 }
-            }));
+            });
     }
 
     public void OnClickSignupButton()

@@ -16,9 +16,9 @@ public class SignupPanelController : MonoBehaviour
         var confirmPassword = _confirmPasswordInputField.text;
 
         if ( string.IsNullOrEmpty(username)
-                || string.IsNullOrEmpty(nickname)
-                || string.IsNullOrEmpty(password)
-                || string.IsNullOrEmpty(confirmPassword)
+             || string.IsNullOrEmpty(nickname)
+             || string.IsNullOrEmpty(password)
+             || string.IsNullOrEmpty(confirmPassword)
             )
         {
             // TODO : 입력값이 비어있음을 알리는 팝업창 표시
@@ -35,7 +35,7 @@ public class SignupPanelController : MonoBehaviour
             };
 
             // 서버로 SignupData 전달하면서 회원가입 진행
-            StartCoroutine(NetworkManager.Instance.Signup(signupRequest, () => {
+            NetworkManager.Instance.Signup(signupRequest, () => {
                 Destroy(gameObject);
             }, () =>
             {
@@ -43,7 +43,7 @@ public class SignupPanelController : MonoBehaviour
                 _nicknameInputField.text = "";
                 _passwordInputField.text = "";
                 _confirmPasswordInputField.text = "";
-            }));
+            });
         }
     }
 

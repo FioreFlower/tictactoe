@@ -3,11 +3,15 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using System.Collections.Generic;
 
 public class NetworkManager : Singleton<NetworkManager>
 {
-    public IEnumerator Signin(SigninRequest signinRequest, Action successAction, Action<int> failAction)
+
+    public void Signin(SigninRequest signinRequest, Action successAction, Action<int> failAction)
+    {
+        StartCoroutine(C_Signin(signinRequest, successAction, failAction));
+    }
+    private IEnumerator C_Signin(SigninRequest signinRequest, Action successAction, Action<int> failAction)
     {
         string jsonString = JsonUtility.ToJson(signinRequest);
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonString);
@@ -88,7 +92,12 @@ public class NetworkManager : Singleton<NetworkManager>
         }
     }
 
-    public IEnumerator Signup(SignupRequest signupRequest , Action successAction, Action failAction)
+    public void Signup(SignupRequest signupRequest , Action successAction, Action failAction)
+    {
+        StartCoroutine(C_Signup(signupRequest, successAction, failAction));
+    }
+
+    private IEnumerator C_Signup(SignupRequest signupRequest , Action successAction, Action failAction)
     {
         string jsonString = JsonUtility.ToJson(signupRequest);
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonString);
@@ -132,10 +141,10 @@ public class NetworkManager : Singleton<NetworkManager>
 
     public void GetScore(Action<UserInfo> successAction, Action failAction)
     {
-        StartCoroutine(GetScore_C(successAction, failAction));
+        StartCoroutine(C_GetScore(successAction, failAction));
     }
 
-    private IEnumerator GetScore_C(Action<UserInfo> successAction, Action failAction)
+    private IEnumerator C_GetScore(Action<UserInfo> successAction, Action failAction)
     {
         using (UnityWebRequest www = new UnityWebRequest(Constants.ServerURL + "/users/score", UnityWebRequest.kHttpVerbGET))
         {
@@ -172,10 +181,10 @@ public class NetworkManager : Singleton<NetworkManager>
 
     public void UpdateScore(UpdateScoreRequest score, Action successAction, Action failAction)
     {
-        StartCoroutine(UpdateScore_C(score, successAction, failAction));
+        StartCoroutine(C_UpdateScore(score, successAction, failAction));
     }
 
-    private IEnumerator UpdateScore_C(UpdateScoreRequest score, Action successAction, Action failAction)
+    private IEnumerator C_UpdateScore(UpdateScoreRequest score, Action successAction, Action failAction)
     {
         string jsonString = JsonUtility.ToJson(score);
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonString);
@@ -230,13 +239,13 @@ public class NetworkManager : Singleton<NetworkManager>
 
     public void LoadLeaderboard(Action<LeaderboardData[]> successAction, Action failAction)
     {
-        StartCoroutine(LoadLeaderboardC(successAction, failAction));
+        StartCoroutine(C_LoadLeaderboard(successAction, failAction));
     }
 
-    private IEnumerator LoadLeaderboardC(Action<LeaderboardData[]> successAction, Action failAction)
+    private IEnumerator C_LoadLeaderboard(Action<LeaderboardData[]> successAction, Action failAction)
     {
 
-        using (UnityWebRequest www = new UnityWebRequest(Constants.ServerURL + "/users/leaderboard", UnityWebRequest.kHttpVerbGET))
+        using (UnityWebRequest www = new UnityWebRequest(Constants.ServerURL + "/leaderboard", UnityWebRequest.kHttpVerbGET))
         {
             www.downloadHandler = new DownloadHandlerBuffer();
 

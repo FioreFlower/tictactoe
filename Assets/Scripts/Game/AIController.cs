@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using Random = UnityEngine.Random;
+﻿// using System.Collections.Generic;
+// using UnityEngine;
+// using Random = UnityEngine.Random;
 
+/*
 public static class AIController
 {
     private const float randomMoveProbability = 0.3f; // 30% AI가 실수를 유발
@@ -208,4 +209,4 @@ public static class AIController
         return false;
     }
 }
-
+*/

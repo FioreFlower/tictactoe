@@ -4,12 +4,17 @@ public class MainPanelController : MonoBehaviour
 {
     public void OnClickSinglePlayButton()
     {
-        GameManager.Instance.ChangeToGameScene(GameManager.GameType.SinglePlayer);
+        GameManager.Instance.ChangeToGameScene(Constants.GameType.SinglePlayer);
     }
     
     public void OnClickDualPlayButton()
     {
-        GameManager.Instance.ChangeToGameScene(GameManager.GameType.CoOpPlayer);
+        GameManager.Instance.ChangeToGameScene(Constants.GameType.CoOpPlayer);
+    }
+
+    public void OnClickMultiPlayButton()
+    {
+        GameManager.Instance.ChangeToGameScene(Constants.GameType.MultiPlayer);
     }
     
     public void OnClickSettingsButton()
@@ -22,7 +27,8 @@ public class MainPanelController : MonoBehaviour
         NetworkManager.Instance.GetScore((userInfo) =>
         {
             Debug.Log(userInfo);
-            GameManager.Instance.OpenLeaderboardPanel();
+            // TODO: 유저 정보 캐싱 진행
+            GameManager.Instance.OpenLeaderboardPanel(userInfo);
         }, () =>
         {
             // 로그인 화면 띄우기

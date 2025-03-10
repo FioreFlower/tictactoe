@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MiniMaxAIController : MonoBehaviour 
 {
-    public static (int row, int col)? GetBestMove(GameManager.PlayerType[,] board)
+    public static (int row, int col)? GetBestMove(Constants.PlayerType[,] board)
     {
         int bestScore = int.MinValue;
         (int row, int col)? bestMove = null;
@@ -12,11 +12,11 @@ public class MiniMaxAIController : MonoBehaviour
         {
             for (int col = 0; col < board.GetLength(1); col++)
             {
-                if (board[row, col] == GameManager.PlayerType.None)
+                if (board[row, col] == Constants.PlayerType.None)
                 {
-                    board[row, col] = GameManager.PlayerType.PlayerB;
+                    board[row, col] = Constants.PlayerType.PlayerB;
                     var score = DoMiniMax(board, 0, false);
-                    board[row, col] = GameManager.PlayerType.None;
+                    board[row, col] = Constants.PlayerType.None;
                     
                     if (score > bestScore)
                     {
@@ -28,11 +28,11 @@ public class MiniMaxAIController : MonoBehaviour
         }
         return bestMove;
     }
-    private static int DoMiniMax(GameManager.PlayerType[,] board, int depth, bool isAITurn)
+    private static int DoMiniMax(Constants.PlayerType[,] board, int depth, bool isAITurn)
     {
-        if (CheckGameWin(GameManager.PlayerType.PlayerA, board))
+        if (CheckGameWin(Constants.PlayerType.PlayerA, board))
             return -10 + depth;
-        if (CheckGameWin(GameManager.PlayerType.PlayerB, board))
+        if (CheckGameWin(Constants.PlayerType.PlayerB, board))
             return 10 - depth;
         if (IsAllBlocksPlaced(board))
             return 0;
@@ -44,11 +44,11 @@ public class MiniMaxAIController : MonoBehaviour
             {
                 for (var col = 0; col < board.GetLength(1); col++)
                 {
-                    if (board[row, col] == GameManager.PlayerType.None)
+                    if (board[row, col] == Constants.PlayerType.None)
                     {
-                        board[row, col] = GameManager.PlayerType.PlayerB;
+                        board[row, col] = Constants.PlayerType.PlayerB;
                         var score = DoMiniMax(board, depth + 1, false);
-                        board[row, col] = GameManager.PlayerType.None;
+                        board[row, col] = Constants.PlayerType.None;
                         bestScore = Mathf.Max(bestScore, score);
                     }
                 }
@@ -62,11 +62,11 @@ public class MiniMaxAIController : MonoBehaviour
             {
                 for (var col = 0; col < board.GetLength(1); col++)
                 {
-                    if (board[row, col] == GameManager.PlayerType.None)
+                    if (board[row, col] == Constants.PlayerType.None)
                     {
-                        board[row, col] = GameManager.PlayerType.PlayerA;
+                        board[row, col] = Constants.PlayerType.PlayerA;
                         var score = DoMiniMax(board, depth + 1, true);
-                        board[row, col] = GameManager.PlayerType.None;
+                        board[row, col] = Constants.PlayerType.None;
                         bestScore = Mathf.Min(bestScore, score);
                     }
                 }
@@ -79,13 +79,13 @@ public class MiniMaxAIController : MonoBehaviour
     /// 모든 마커가 보드에 배치 되었는지 확인하는 함수
     /// </summary>
     /// <returns>True: 모두 배치</returns>
-    public static bool IsAllBlocksPlaced(GameManager.PlayerType[,] board)
+    public static bool IsAllBlocksPlaced(Constants.PlayerType[,] board)
     {
         for (var row = 0; row < board.GetLength(0); row++)
         {
             for (var col = 0; col < board.GetLength(1); col++)
             {
-                if (board[row, col] == GameManager.PlayerType.None)
+                if (board[row, col] == Constants.PlayerType.None)
                     return false;
             }
         }
@@ -98,7 +98,7 @@ public class MiniMaxAIController : MonoBehaviour
     /// <param name="playerType"></param>
     /// <param name="board"></param>
     /// <returns></returns>
-    private static bool CheckGameWin(GameManager.PlayerType playerType, GameManager.PlayerType[,] board)
+    private static bool CheckGameWin(Constants.PlayerType playerType, Constants.PlayerType[,] board)
     {
         int length = board.GetLength(0);
         
